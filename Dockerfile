@@ -1,6 +1,8 @@
 # ---- STAGE 1: Build Site ----
 FROM node:alpine AS builder
 
+ARG GIT_DIR="site"
+
 # Install system dependencies for sass
 RUN apk add --no-cache libc6-compat
 
@@ -8,7 +10,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy everything and install dependencies
-COPY site .
+COPY ${GIT_DIR} .
 
 RUN npm install
 RUN npm run build

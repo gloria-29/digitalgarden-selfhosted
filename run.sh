@@ -6,8 +6,10 @@ PROJECT_DIR=$(dirname $(realpath "$0"))
 cd "$PROJECT_DIR"
 # Source variables
 source .env
+# Get site dir
+SITE_DIR="${PAGE_DIRECTORY:-site}"
 # Go to git dir
-cd "$PROJECT_DIR"/site
+cd "$PROJECT_DIR"/"$SITE_DIR"
 
 # Build latest version & ensure running
 bash "$PROJECT_DIR"/builder.sh
