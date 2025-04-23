@@ -10,7 +10,8 @@ source .env
 
 # -- Building -- #
 echo "⏳ Building new garde image..."
-docker build -t "${CONTAINER_NAME}" -f Dockerfile --build-arg GIT_DIR="${PAGE_DIRECTORY}" .
+docker build -t "${CONTAINER_NAME}" -f Dockerfile --build-arg GIT_DIR="${PAGE_DIRECTORY}" \
+                                                  --label app_name=garden .
 
 # -- Swapping -- #
 echo "🔁 Swapping containers..."

@@ -14,7 +14,7 @@ cd "$PROJECT_DIR"/"$SITE_DIR"
 # Build latest version & ensure running
 bash "$PROJECT_DIR"/builder.sh
 
-
+# -- Clean-up trap -- #
 exitfn () {
     trap SIGINT  # Restore signal handling for SIGINT.
     echo "🔄 Cleaning Up..."
@@ -24,7 +24,7 @@ exitfn () {
 
 trap "exitfn" INT
 
-## -- Watcher Loop -- #
+# -- Watcher Loop -- #
 while true; do
     sleep $WATCHER_INTERVAL
     echo "🔄 Checking for updates..."
