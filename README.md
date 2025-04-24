@@ -22,6 +22,7 @@ The script also tears down your container when you exit the script.
 ### Deploy your garden
 1) Clone your project to './site': `git clone <project> site`
 2) Configure your `.env` file as desired
-3) Run `./run.sh`
+3) Manage the container with `garden`. `./garden up` will start your container.
 
 **Note:** You can name your garden directory as something else as well, but then you have to change this setting in the `.env` file. 
+**NOTE:** Run `./garden help` for more commands. `./garden down` will stop your container.
