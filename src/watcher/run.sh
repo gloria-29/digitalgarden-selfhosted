@@ -5,20 +5,20 @@
 PROJECT_DIR=$(dirname $(realpath "$0"))
 cd "$PROJECT_DIR"
 # Source variables
-source .env
+. .env
 # Get site dir
 SITE_DIR="${PAGE_DIRECTORY:-site}"
 # Go to git dir
-cd "$PROJECT_DIR"/"$SITE_DIR"
+cd /app/"$SITE_DIR"
 
 # Build latest version & ensure running
-bash "$PROJECT_DIR"/builder.sh
+sh /app/watcher/builder.sh
 
 # -- Clean-up trap -- #
 exitfn () {
     trap SIGINT  # Restore signal handling for SIGINT.
     echo "🔄 Cleaning Up..."
-    bash "$PROJECT_DIR"/cleanup.sh
+    bash /app/watcher/cleanup.sh
     exit
 }
 
@@ -35,7 +35,7 @@ while true; do
     if [ "$behind" -gt 0 ]; then
         echo "🚀 New version detected. Pulling and rebuilding..."
         git pull
-        bash "$PROJECT_DIR"/builder.sh
+        bash /app/watcher/builder.sh
     else
         echo "✅ No changes detected."
     fi

@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+# Go to project dir
+PROJECT_DIR=$(dirname $(realpath "$0"))
+cd "${PROJECT_DIR}"
+
+# --- Configuration (optional) ---
+. .env
+
+# --- Functions ---
+
+start() {
+# Check if container is running
+    if docker ps --format "{{.Names}}" | grep -q "${CONTAINER_NAME}_watcher"; then
+        docker stop "${CONTAINER_NAME}_watcher" &>/dev/null || true
+    fi
+    # Remove existing containers
+    if docker container ls -a  --format "{{.Names}}" | grep -q "${CONTAINER_NAME}_watcher"; then
+        docker rm "${CONTAINER_NAME}_watcher" &>/dev/null || true
+    fi
+
+    echo "🚀 Starting project: $PROJECT_NAME"
+    docker run -d \
+      --name "${CONTAINER_NAME}"_watcher \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "${PROJECT_DIR}"/src/watcher:/app/watcher \
+      -v "${PROJECT_DIR}"/src/Dockerfile:/app/Dockerfile \
+      -v "${PROJECT_DIR}"/src/nginx.conf:/app/nginx.conf \
+      -v "${PROJECT_DIR}"/site:/app/site \
+      -v "${PROJECT_DIR}"/.env:/app/watcher/.env \
+      -e CONTAINER_NAME=garden \
+      -e WATCHER_INTERVAL=20 \
+      -w /app/watcher \
+      --rm \
+      docker:cli \
+      sh run.sh
+
+}
+
+stop() {
+    clean
+    docker stop garden_watcher &>/dev/null || true
+    docker rm garden_watcher   &>/dev/null || true
+}
+
+build() {
+    clean
+    docker run -d \
+      --name "${CONTAINER_NAME}"_watcher \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "${PROJECT_DIR}"/src/watcher:/app/watcher \
+      -v "${PROJECT_DIR}"/src/Dockerfile:/app/Dockerfile \
+      -v "${PROJECT_DIR}"/src/nginx.conf:/app/nginx.conf \
+      -v "${PROJECT_DIR}"/site:/app/site \
+      -v "${PROJECT_DIR}"/.env:/app/watcher/.env \
+      -e CONTAINER_NAME=garden \
+      -e WATCHER_INTERVAL=20 \
+      -w /app/watcher \
+      --rm \
+      docker:cli \
+      sh builder.sh
+}
+
+clean() {
+    source .env
+    CONTAINER_NAME="${CONTAINER_NAME}" bash "$PROJECT_DIR"/src/watcher/cleanup.sh
+}
+
+logs() {
+    echo "📋Logs ${CONTAINER_NAME}:"
+    if docker container ls -a  --format "{{.Names}}" | grep -q "${CONTAINER_NAME}"; then
+        docker logs "$CONTAINER_NAME"
+    fi
+    echo ""
+    echo "📋Logs ${CONTAINER_NAME}_watcher:"
+    if docker container ls -a  --format "{{.Names}}" | grep -q "${CONTAINER_NAME}"; then
+        docker logs "${CONTAINER_NAME}_watcher"
+    fi
+}
+
+show_help() {
+    echo "Usage: $0 {up|start|down|stop|build|clean}"
+    echo
+    echo "Commands:"
+    echo "  up, start     Start the garden"
+    echo "  down, stop    Stop the garden"
+    echo "  build         Build the garden"
+    echo "  clean         Prune old containers/images related to the garden"
+}
+
+# --- Main Execution ---
+
+case "$1" in
+    up|start)
+        start
+        ;;
+    down|stop)
+        stop
+        ;;
+    build)
+        build
+        ;;
+    clean)
+        clean
+        ;;
+    logs)
+        logs
+        ;;
+    *)
+        show_help
+        exit 1
+        ;;
+esac
