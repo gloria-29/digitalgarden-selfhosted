@@ -10,6 +10,8 @@ cd "$PROJECT_DIR"
 SITE_DIR="${PAGE_DIRECTORY:-site}"
 # Go to git dir
 cd /app/"$SITE_DIR"
+# Set site directory as safe
+git config --add safe.directory /app/site
 
 # Build latest version & ensure running
 sh /app/watcher/builder.sh
