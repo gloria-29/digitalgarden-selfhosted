@@ -9,7 +9,7 @@ cd /app
 . watcher/.env
 
 # -- Building -- #
-echo "⏳ Building new garde image..."
+echo "⏳ Building new garden image..."
 docker build -t "${CONTAINER_NAME}" -f Dockerfile --build-arg GIT_DIR="${PAGE_DIRECTORY}" \
                                                   --label app_name=garden .
 
