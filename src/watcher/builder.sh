@@ -16,6 +16,6 @@ docker build -t "${CONTAINER_NAME}" -f Dockerfile --build-arg GIT_DIR="${PAGE_DI
 # -- Swapping -- #
 echo "🔁 Swapping containers..."
 sh /app/watcher/cleanup.sh
-docker run -d --name "${CONTAINER_NAME}" -p 8080:80 "${CONTAINER_NAME}"
+docker run -d --name "${CONTAINER_NAME}" -p 8080:80 --restart unless-stopped "${CONTAINER_NAME}"
 
 echo "✅ Swap complete."

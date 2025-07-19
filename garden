@@ -31,7 +31,7 @@ start() {
       -e CONTAINER_NAME=garden \
       -e WATCHER_INTERVAL=20 \
       -w /app/watcher \
-      --rm \
+      --restart unless-stopped \
       docker:cli \
       sh run.sh
 
